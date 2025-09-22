@@ -2,7 +2,8 @@ import csv
 import random
 import faker
 import sys
-from datetime import datetime, timedelta
+from datetime import datetime
+from tqdm import tqdm
 
 def generate_mock_data(rows=100_000):
     fake = faker.Faker()
@@ -26,7 +27,7 @@ def generate_mock_data(rows=100_000):
         departments = ["Engineering", "Marketing", "Sales", "HR", "Finance", "Operations", "Legal", "Support"]
         
         # Generate rows
-        for i in range(1, rows + 1):
+        for i in tqdm(range(1, rows + 1), desc="Generating rows", unit="row"):
             registration_date = fake.date_between(start_date="-5y", end_date="today")
             birth_date = fake.date_between(start_date="-80y", end_date="-18y")
             age = (datetime.now().date() - birth_date).days // 365
@@ -79,6 +80,6 @@ if __name__ == "__main__":
                 print("❌ Please enter a valid integer")
                 continue
     
-    print(f"🚀 Generating {rows:,} rows of mock data...")
+    print(f"🚀 Starting generation of {rows:,} rows of mock data...")
     filename = generate_mock_data(rows)
     print(f"✅ Mock data CSV with {rows:,} rows generated successfully as '{filename}'!")
