@@ -2,8 +2,17 @@ import csv
 import random
 import faker
 import sys
+import time
 from datetime import datetime
-from tqdm import tqdm
+
+def print_progress_bar(iteration, total, rate, length=30, fill='█', prefix='Progress:'):
+    """Print a custom progress bar that stays on one line"""
+    percent = f"{100 * (iteration / float(total)):.1f}"
+    filled_length = int(length * iteration // total)
+    bar = fill * filled_length + '-' * (length - filled_length)
+    print(f'\r{prefix} |{bar}| {percent}% ({rate:.0f} rows/s)'.ljust(80), end='')
+    if iteration == total:
+        print()  # Print a new line on completion
 
 def generate_mock_data(rows=100_000):
     fake = faker.Faker()
@@ -27,7 +36,15 @@ def generate_mock_data(rows=100_000):
         departments = ["Engineering", "Marketing", "Sales", "HR", "Finance", "Operations", "Legal", "Support"]
         
         # Generate rows
-        for i in tqdm(range(1, rows + 1), desc="Generating rows", unit="row"):
+        start_time = time.time()
+        for i in range(1, rows + 1):
+            # Update progress bar every 100 rows or on the last row
+            if i % 100 == 0 or i == rows:
+                elapsed_time = time.time() - start_time
+                if i > 0:
+                    rate = i / elapsed_time
+                    print_progress_bar(i, rows, rate, prefix='Generating rows:')
+            
             registration_date = fake.date_between(start_date="-5y", end_date="today")
             birth_date = fake.date_between(start_date="-80y", end_date="-18y")
             age = (datetime.now().date() - birth_date).days // 365
